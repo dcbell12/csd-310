@@ -30,7 +30,7 @@ student1_id = students.insert_one(student1).inserted_id
 student2_id = students.insert_one(student2).inserted_id
 student3_id = students.insert_one(student3).inserted_id
 
-# Display the returned student_ids
+
 print(student1_id)
 print(student2_id)
 print(student3_id)
