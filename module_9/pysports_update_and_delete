@@ -1,0 +1,90 @@
+/*
+  Author: Dylan C.
+  Date: 7/29/23
+  Description: Module 9.3 update and delete records MYSQL Database
+/*
+
+import pymysql
+
+# Database connection 
+db_host = "localuser"
+db_user = "test"
+db_password = "PassWord"
+db_name = "pysports"
+
+# Connect to database
+try:
+    connection = pymysql.connect(host=db_host, user=db_user, password=db_password, database=db_name)
+    print("Connected to the database successfully!")
+except pymysql.Error as e:
+    print(f"Error connecting to the database: {e}")
+    exit()
+
+# Create a cursor object to execute queries
+cursor = connection.cursor()
+
+try:
+    # INSERT query to add a new player
+    insert_query = """
+        INSERT INTO player (`first name`, `last name`, `team id`)
+        VALUES ('Smeagol', 'Shire Folk', 11);
+    """
+    cursor.execute(insert_query)
+    connection.commit()
+    print("Player record inserted successfully!")
+
+    # UPDATE query to change the player's team to Team Sauron
+    update_query = """
+        UPDATE player
+        SET `team id` = 2
+        WHERE `first name` = 'Smeagol';
+    """
+    cursor.execute(update_query)
+    connection.commit()
+    print("Player record updated successfully!")
+
+    # SELECT query with INNER JOIN to display all player records with team names
+    select_query = """
+        SELECT player.player_id, player.`first name`, player.`last name`, team.team_name
+        FROM player
+        INNER JOIN team ON player.`team id` = team.team_id;
+    """
+    cursor.execute(select_query)
+
+    # Fetch all rows from the result
+    result = cursor.fetchall()
+
+    # Display the player records with team names
+    print("\nDISPLAYING PLAYERS AFTER INSERT AND UPDATE\n")
+    for row in result:
+        player_id, first_name, last_name, team_name = row
+        print(f"Player ID: {player_id} First Name: {first_name} Last Name: {last_name} Team Name: {team_name}")
+
+    # DELETE query to remove the updated record
+    delete_query = """
+        DELETE FROM player
+        WHERE `first name` = 'Smeagol';
+    """
+    cursor.execute(delete_query)
+    connection.commit()
+    print("\nPlayer record deleted successfully!")
+
+    # SELECT query with INNER JOIN to display all player records after the delete
+    cursor.execute(select_query)
+
+    # Fetch all rows from the result
+    result_after_delete = cursor.fetchall()
+
+    # Display the player records with team names after the delete
+    print("\nDISPLAYING ALL PLAYERS AFTER DELETE\n")
+    for row in result_after_delete:
+        player_id, first_name, last_name, team_name = row
+        print(f"Player ID: {player_id} First Name: {first_name} Last Name: {last_name} Team Name: {team_name}")
+
+except pymysql.Error as e:
+    print(f"Error executing the query: {e}")
+
+finally:
+    # Close cursor and connection
+    cursor.close()
+    connection.close()
